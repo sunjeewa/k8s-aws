@@ -1,0 +1,541 @@
+Resources:
+  KubernetesVPC3B245773:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.100.0.0/16
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/Resource
+  KubernetesVPCPublicSubnet1SubnetF018D715:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.100.0.0/18
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PublicSubnet1
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet1/Subnet
+  KubernetesVPCPublicSubnet1RouteTableED5489C2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PublicSubnet1
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet1/RouteTable
+  KubernetesVPCPublicSubnet1RouteTableAssociation561A3C0E:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPublicSubnet1RouteTableED5489C2
+      SubnetId:
+        Ref: KubernetesVPCPublicSubnet1SubnetF018D715
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet1/RouteTableAssociation
+  KubernetesVPCPublicSubnet1DefaultRoute52C79B5B:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPublicSubnet1RouteTableED5489C2
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: KubernetesVPCIGWAAC589EA
+    DependsOn:
+      - KubernetesVPCVPCGW4393F49A
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet1/DefaultRoute
+  KubernetesVPCPublicSubnet1EIP40845A34:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet1/EIP
+  KubernetesVPCPublicSubnet1NATGatewayC197C295:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      AllocationId:
+        Fn::GetAtt:
+          - KubernetesVPCPublicSubnet1EIP40845A34
+          - AllocationId
+      SubnetId:
+        Ref: KubernetesVPCPublicSubnet1SubnetF018D715
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PublicSubnet1
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet1/NATGateway
+  KubernetesVPCPublicSubnet2Subnet75E53EDE:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.100.64.0/18
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PublicSubnet2
+        - Key: aws-cdk:subnet-name
+          Value: Public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet2/Subnet
+  KubernetesVPCPublicSubnet2RouteTable8B7157F9:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PublicSubnet2
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet2/RouteTable
+  KubernetesVPCPublicSubnet2RouteTableAssociationF21023D5:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPublicSubnet2RouteTable8B7157F9
+      SubnetId:
+        Ref: KubernetesVPCPublicSubnet2Subnet75E53EDE
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet2/RouteTableAssociation
+  KubernetesVPCPublicSubnet2DefaultRouteA982BB25:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPublicSubnet2RouteTable8B7157F9
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: KubernetesVPCIGWAAC589EA
+    DependsOn:
+      - KubernetesVPCVPCGW4393F49A
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PublicSubnet2/DefaultRoute
+  KubernetesVPCPrivateSubnet1SubnetDC915161:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.100.128.0/18
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PrivateSubnet1
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet1/Subnet
+  KubernetesVPCPrivateSubnet1RouteTableEAE62390:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PrivateSubnet1
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet1/RouteTable
+  KubernetesVPCPrivateSubnet1RouteTableAssociation6A8BC79F:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPrivateSubnet1RouteTableEAE62390
+      SubnetId:
+        Ref: KubernetesVPCPrivateSubnet1SubnetDC915161
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet1/RouteTableAssociation
+  KubernetesVPCPrivateSubnet1DefaultRouteEC8A00BF:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPrivateSubnet1RouteTableEAE62390
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: KubernetesVPCPublicSubnet1NATGatewayC197C295
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet1/DefaultRoute
+  KubernetesVPCPrivateSubnet2SubnetE9291F4F:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.100.192.0/18
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PrivateSubnet2
+        - Key: aws-cdk:subnet-name
+          Value: Private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet2/Subnet
+  KubernetesVPCPrivateSubnet2RouteTableB8C01376:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC/PrivateSubnet2
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet2/RouteTable
+  KubernetesVPCPrivateSubnet2RouteTableAssociationF0BEE94E:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPrivateSubnet2RouteTableB8C01376
+      SubnetId:
+        Ref: KubernetesVPCPrivateSubnet2SubnetE9291F4F
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet2/RouteTableAssociation
+  KubernetesVPCPrivateSubnet2DefaultRouteD3AD61B9:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: KubernetesVPCPrivateSubnet2RouteTableB8C01376
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: KubernetesVPCPublicSubnet1NATGatewayC197C295
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/PrivateSubnet2/DefaultRoute
+  KubernetesVPCIGWAAC589EA:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesVPC
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/IGW
+  KubernetesVPCVPCGW4393F49A:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: KubernetesVPC3B245773
+      InternetGatewayId:
+        Ref: KubernetesVPCIGWAAC589EA
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesVPC/VPCGW
+  KubernetesMasterASGInstanceSecurityGroup39E5C1AA:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: K8SAwsStack/KubernetesMasterASG/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress: []
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesMasterASG
+      VpcId:
+        Ref: KubernetesVPC3B245773
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesMasterASG/InstanceSecurityGroup/Resource
+  KubernetesMasterASGInstanceSecurityGroupfromK8SAwsStackMELBSecurityGroupE472614780802268AC7D:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Load balancer to target
+      FromPort: 8080
+      GroupId:
+        Fn::GetAtt:
+          - KubernetesMasterASGInstanceSecurityGroup39E5C1AA
+          - GroupId
+      SourceSecurityGroupId:
+        Fn::GetAtt:
+          - MELBSecurityGroup621EB787
+          - GroupId
+      ToPort: 8080
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesMasterASG/InstanceSecurityGroup/from K8SAwsStackMELBSecurityGroupE4726147:8080
+  KubernetesMasterASGInstanceRole4F9B6D9C:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                Fn::Join:
+                  - ""
+                  - - ec2.
+                    - Ref: AWS::URLSuffix
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonEC2RoleforSSM
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesMasterASG/InstanceRole/Resource
+  KubernetesMasterASGInstanceProfile04CA9463:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: KubernetesMasterASGInstanceRole4F9B6D9C
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesMasterASG/InstanceProfile
+  KubernetesMasterASGLaunchConfig10DF2C92:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t3.medium
+      AssociatePublicIpAddress: true
+      IamInstanceProfile:
+        Ref: KubernetesMasterASGInstanceProfile04CA9463
+      KeyName: oregon-dcp-sw
+      SecurityGroups:
+        - Fn::GetAtt:
+            - KubernetesMasterASGInstanceSecurityGroup39E5C1AA
+            - GroupId
+      UserData:
+        Fn::Base64: "#!/bin/bash"
+    DependsOn:
+      - KubernetesMasterASGInstanceRole4F9B6D9C
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesMasterASG/LaunchConfig
+  KubernetesMasterASG3F82AD1D:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      MaxSize: "1"
+      MinSize: "1"
+      DesiredCapacity: "1"
+      LaunchConfigurationName:
+        Ref: KubernetesMasterASGLaunchConfig10DF2C92
+      Tags:
+        - Key: Name
+          PropagateAtLaunch: true
+          Value: K8SAwsStack/KubernetesMasterASG
+      TargetGroupARNs:
+        - Ref: MELBListenerKubernetesMastersGroup53D7F8E8
+      VPCZoneIdentifier:
+        - Ref: KubernetesVPCPublicSubnet1SubnetF018D715
+        - Ref: KubernetesVPCPublicSubnet2Subnet75E53EDE
+    UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: true
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesMasterASG/ASG
+  MELB23B416F7:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      LoadBalancerAttributes: []
+      Scheme: internet-facing
+      SecurityGroups:
+        - Fn::GetAtt:
+            - MELBSecurityGroup621EB787
+            - GroupId
+      Subnets:
+        - Ref: KubernetesVPCPublicSubnet1SubnetF018D715
+        - Ref: KubernetesVPCPublicSubnet2Subnet75E53EDE
+      Type: application
+    DependsOn:
+      - KubernetesVPCPublicSubnet1DefaultRoute52C79B5B
+      - KubernetesVPCPublicSubnet2DefaultRouteA982BB25
+    Metadata:
+      aws:cdk:path: K8SAwsStack/MELB/Resource
+  MELBSecurityGroup621EB787:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Automatically created Security Group for ELB K8SAwsStackMELB58123DBA
+      SecurityGroupEgress: []
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow from anyone on port 80
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      VpcId:
+        Ref: KubernetesVPC3B245773
+    Metadata:
+      aws:cdk:path: K8SAwsStack/MELB/SecurityGroup/Resource
+  MELBSecurityGrouptoK8SAwsStackKubernetesMasterASGInstanceSecurityGroup8B1A4A19808001717504:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      GroupId:
+        Fn::GetAtt:
+          - MELBSecurityGroup621EB787
+          - GroupId
+      IpProtocol: tcp
+      Description: Load balancer to target
+      DestinationSecurityGroupId:
+        Fn::GetAtt:
+          - KubernetesMasterASGInstanceSecurityGroup39E5C1AA
+          - GroupId
+      FromPort: 8080
+      ToPort: 8080
+    Metadata:
+      aws:cdk:path: K8SAwsStack/MELB/SecurityGroup/to K8SAwsStackKubernetesMasterASGInstanceSecurityGroup8B1A4A19:8080
+  MELBListener8D0B54DE:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn:
+            Ref: MELBListenerKubernetesMastersGroup53D7F8E8
+          Type: forward
+      LoadBalancerArn:
+        Ref: MELB23B416F7
+      Port: 80
+      Protocol: HTTP
+      Certificates: []
+    Metadata:
+      aws:cdk:path: K8SAwsStack/MELB/Listener/Resource
+  MELBListenerKubernetesMastersGroup53D7F8E8:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      Port: 8080
+      Protocol: HTTP
+      TargetGroupAttributes: []
+      Targets: []
+      TargetType: instance
+      VpcId:
+        Ref: KubernetesVPC3B245773
+    Metadata:
+      aws:cdk:path: K8SAwsStack/MELB/Listener/KubernetesMastersGroup/Resource
+  KubernetesWorkerASGInstanceSecurityGroupF4D42E19:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: K8SAwsStack/KubernetesWorkerASG/InstanceSecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress: []
+      Tags:
+        - Key: Name
+          Value: K8SAwsStack/KubernetesWorkerASG
+      VpcId:
+        Ref: KubernetesVPC3B245773
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesWorkerASG/InstanceSecurityGroup/Resource
+  KubernetesWorkerASGInstanceRole3442E4BD:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                Fn::Join:
+                  - ""
+                  - - ec2.
+                    - Ref: AWS::URLSuffix
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - Fn::Join:
+            - ""
+            - - "arn:"
+              - Ref: AWS::Partition
+              - :iam::aws:policy/service-role/AmazonEC2RoleforSSM
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesWorkerASG/InstanceRole/Resource
+  KubernetesWorkerASGInstanceProfileECABB66C:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: KubernetesWorkerASGInstanceRole3442E4BD
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesWorkerASG/InstanceProfile
+  KubernetesWorkerASGLaunchConfig4E238D16:
+    Type: AWS::AutoScaling::LaunchConfiguration
+    Properties:
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t3.medium
+      AssociatePublicIpAddress: true
+      IamInstanceProfile:
+        Ref: KubernetesWorkerASGInstanceProfileECABB66C
+      KeyName: oregon-dcp-sw
+      SecurityGroups:
+        - Fn::GetAtt:
+            - KubernetesWorkerASGInstanceSecurityGroupF4D42E19
+            - GroupId
+      UserData:
+        Fn::Base64: "#!/bin/bash"
+    DependsOn:
+      - KubernetesWorkerASGInstanceRole3442E4BD
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesWorkerASG/LaunchConfig
+  KubernetesWorkerASG081E567D:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      MaxSize: "1"
+      MinSize: "1"
+      DesiredCapacity: "1"
+      LaunchConfigurationName:
+        Ref: KubernetesWorkerASGLaunchConfig4E238D16
+      Tags:
+        - Key: Name
+          PropagateAtLaunch: true
+          Value: K8SAwsStack/KubernetesWorkerASG
+      VPCZoneIdentifier:
+        - Ref: KubernetesVPCPublicSubnet1SubnetF018D715
+        - Ref: KubernetesVPCPublicSubnet2Subnet75E53EDE
+    UpdatePolicy:
+      AutoScalingScheduledAction:
+        IgnoreUnmodifiedGroupSizeProperties: true
+    Metadata:
+      aws:cdk:path: K8SAwsStack/KubernetesWorkerASG/ASG
+  SGK8S736E36B6:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Kubernetes Instances
+      GroupName: SG-K8S
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress: []
+      VpcId:
+        Ref: KubernetesVPC3B245773
+    Metadata:
+      aws:cdk:path: K8SAwsStack/SGK8S/Resource
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Modules: aws-cdk=0.37.0,@aws-cdk/aws-autoscaling=0.37.0,@aws-cdk/aws-autoscaling-common=0.37.0,@aws-cdk/aws-cloudwatch=0.37.0,@aws-cdk/aws-ec2=0.37.0,@aws-cdk/aws-elasticloadbalancingv2=0.37.0,@aws-cdk/aws-iam=0.37.0,@aws-cdk/aws-ssm=0.37.0,@aws-cdk/core=0.37.0,@aws-cdk/cx-api=0.37.0,@aws-cdk/region-info=0.37.0,jsii-runtime=node.js/v10.15.0
+Parameters:
+  SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+  SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /aws/service/ami-amazon-linux-latest/amzn-ami-hvm-x86_64-gp2
+
